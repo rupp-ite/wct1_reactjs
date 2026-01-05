@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>React-Part-1.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="lab-11-reactjs-%E2%80%93-part-1">Lab 11: ReactJS – Part 1</h1>
+<hr>
+<h3 id="project-code-structure">Project code structure</h3>
+<pre class="hljs"><code><div>my-react-app/
+|── src/
+|     |── assets/
+|            |── profile.jpg
+|            |── stem.jpg
+|     |── components/
+|            |── Footer.jsx 
+|            |── Navbar.jsx 
+|     |── pages/
+|            |── HomePage.jsx 
+|            |── LoginPage.jsx
+|            |── Register.jsx
+│     |── App.css     
+│     |── App.jsx    
+│     |── index.css         
+│     |── main.jsx        
+|── public/
+|── package.json
+└── vite.config.js
+</div></code></pre>
+<hr>
+<h3 id="1-use-tailwind-framework-for-css-style">1. Use Tailwind framework for CSS Style</h3>
+<h4 id="11-install-tailwind-css">1.1 Install Tailwind CSS</h4>
+<p>Install Tailwind CSS and its Vite plugin.</p>
+<p><code>npm install tailwindcss @tailwindcss/vite</code></p>
+<h4 id="12-configure-tailwind-in-viteconfigjs">1.2 Configure Tailwind in <code>vite.config.js</code></h4>
+<p>Add the Tailwind plugin to the Vite configuration.</p>
+<pre class="hljs"><code><div>import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    react()
+  ],
+})
+</div></code></pre>
+<h4 id="13-import-tailwind-in-global-css">1.3 Import Tailwind in global CSS</h4>
+<p>Make sure Tailwind is imported in <code>src/index.css</code> and <code>src/App.css</code>.</p>
+<p><code>@import &quot;ailwindcss&quot;</code></p>
+<hr>
+<h3 id="2-create-components">2. Create Components</h3>
+<h4 id="21-create-homepagejsx-in-srcpages">2.1 Create <code>HomePage.jsx</code> in <code>src/pages/</code></h4>
+<p>Build a simple Home page with an image and text.</p>
+<pre class="hljs"><code><div>
+import profilePic from '../assets/profile.jpg';
+import StemBuilding from '../assets/stem.jpeg'
+
+export default function HomePage() {
+  return (
+    &lt;main className=&quot; flex-1 flex-col flex items-center justify-center space-y-6&quot;&gt;
+
+      &lt;section className=&quot; flex text-start px-4 space-x-4&quot;&gt;
+        &lt;img 
+            src={profilePic}
+            alt=&quot;Profile&quot;
+            className=&quot;w-40 h-40 rounded-full shadow-lg border-4 border-white mb-6&quot;
+        /&gt;
+        &lt;div className='space-y-4'&gt;
+          &lt;h1 className=&quot;text-4xl md:text-5xl font-bold &quot;&gt;
+            Welcome to My React Site
+          &lt;/h1&gt;
+          &lt;p className=&quot;text-lg md:text-xl &quot;&gt;
+            Hello! I'm learning &lt;span className=&quot;font-semibold text-blue-600&quot;&gt;React&lt;/span&gt;.
+          &lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
+      &lt;img 
+          src={StemBuilding}
+          alt=&quot;StemBuilding&quot;
+          className=&quot;max-w-3xl&quot;
+      /&gt;
+
+    &lt;/main&gt;
+  );
+}
+
+</div></code></pre>
+<h4 id="22-use-homepage-in-srcappjsx">2.2 Use <code>HomePage</code> in <code>src/App.jsx</code></h4>
+<p>Render the HomePage component inside App.</p>
+<pre class="hljs"><code><div>import { HomePage } from './pages/HomePage';
+
+  function App() {
+  
+    return(
+      &lt;&gt;
+        &lt;HomePage /&gt;
+      &lt;/&gt;
+    
+    );
+  }
+
+export default App;
+</div></code></pre>
+<h3 id="3-layout-components-navbar--footer">3. Layout Components (Navbar &amp; Footer)</h3>
+<h4 id="31-create-navbarjsx-component-in-srccomponents">3.1 Create <code>Navbar.jsx</code> component in <code>src/components/</code></h4>
+<p>Build a navigation bar with Home, Register, and Login links.</p>
+<pre class="hljs"><code><div>import { Link, useLocation } from &quot;react-router-dom&quot;;
+
+export default function Navbar() {
+  const location = useLocation();
+
+  const linkClass =
+    &quot;px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100&quot;;
+
+  const activeClass =
+    &quot;px-3 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white&quot;;
+
+  return (
+    &lt;header className=&quot;bg-white shadow&quot;&gt;
+      &lt;nav className=&quot;container mx-auto flex items-center justify-between px-4 py-3&quot;&gt;
+
+        {/* Logo */}
+        &lt;Link to=&quot;/&quot; className=&quot;text-xl font-bold text-blue-600&quot;&gt;
+          MyReactApp
+        &lt;/Link&gt;
+
+        {/* Links */}
+        &lt;div className=&quot;flex gap-2&quot;&gt;
+
+          &lt;Link
+            to=&quot;/&quot;
+            className={location.pathname === &quot;/&quot; ? activeClass : linkClass}
+          &gt;
+            Home
+          &lt;/Link&gt;
+
+          &lt;Link
+            to=&quot;/register&quot;
+            className={location.pathname === &quot;/register&quot; ? activeClass : linkClass}
+          &gt;
+            Register
+          &lt;/Link&gt;
+
+          &lt;div className=&quot;border&quot; /&gt;
+
+          &lt;Link
+            to=&quot;/login&quot;
+            className={location.pathname === &quot;/login&quot; ? activeClass : linkClass}
+          &gt;
+            Login
+          &lt;/Link&gt;
+          
+        &lt;/div&gt;
+      &lt;/nav&gt;
+    &lt;/header&gt;
+  );
+}
+
+</div></code></pre>
+<h4 id="32-create-footerjsx-component-srccomponents">3.2 Create <code>Footer.jsx</code> component <code>src/components/</code></h4>
+<p>Add a simple footer with a copyright message.</p>
+<pre class="hljs"><code><div>export default function Footer() {
+  return (
+    &lt;footer&gt;
+      &lt;div className=&quot;max-w-6xl mx-auto px-4 py-6 flex items-center justify-center&quot;&gt;
+        &lt;p className=&quot;text-sm &quot;&gt;
+          © {new Date().getFullYear()} MyReactSite. All rights reserved.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/footer&gt;
+  );
+}
+</div></code></pre>
+<h3 id="4-install-react-router-npm-install-react-router-dom">4. Install react-router <code>npm install react-router-dom</code></h3>
+<h4 id="add-reactdom-in-srcmainjsx">Add ReactDOM in <code>src/main.jsx</code></h4>
+<pre class="hljs"><code><div>import React from &quot;react&quot;;
+import ReactDOM from &quot;react-dom/client&quot;;
+import { BrowserRouter } from &quot;react-router-dom&quot;;
+import App from &quot;./App.jsx&quot;;
+import &quot;./index.css&quot;;
+
+ReactDOM.createRoot(document.getElementById(&quot;root&quot;)).render(
+  &lt;React.StrictMode&gt;
+    &lt;BrowserRouter&gt;
+      &lt;App /&gt;
+    &lt;/BrowserRouter&gt;
+  &lt;/React.StrictMode&gt;
+);
+</div></code></pre>
+<h3 id="5-use-navbar-homepage-footer-in-appjsx">5. Use Navbar, HomePage, Footer in <code>App.jsx</code></h3>
+<p>Combine Navbar, HomePage, and Footer in the main layout.</p>
+<pre class="hljs"><code><div>import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Navbar /&gt;
+      &lt;HomePage /&gt;
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</div></code></pre>
+<h3 id="6-create-pages-loginpagejsx-and-registerpagejsx-in-srcpages">6. Create pages <code>LoginPage.jsx</code> and <code>RegisterPage.jsx</code> in <code>src/pages/</code></h3>
+<h4 id="61-create-file-loginpagejsx">6.1 Create file <code>LoginPage.jsx</code></h4>
+<pre class="hljs"><code><div>import { Link } from &quot;react-router-dom&quot;;
+
+export default function LoginPage() {
+  return (
+    &lt;section className=&quot;flex-1 flex items-center justify-center bg-gray-100 px-4&quot;&gt;
+      &lt;div className=&quot;w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm&quot;&gt;
+        
+        {/* Title */}
+        &lt;h2 className=&quot;text-3xl font-bold text-center text-gray-800 mb-1&quot;&gt;
+          Welcome Back
+        &lt;/h2&gt;
+        &lt;p className=&quot;text-center text-sm text-gray-500 mb-6&quot;&gt;
+          Login to your account
+        &lt;/p&gt;
+
+        {/* Form */}
+        &lt;form className=&quot;space-y-5&quot;&gt;
+          {/* Email */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Email Address
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;email&quot;
+              placeholder=&quot;you@example.com&quot;
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Password */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Password
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;password&quot;
+              placeholder=&quot;••••••••&quot;
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Submit Button */}
+          &lt;button
+            type=&quot;submit&quot;
+            className=&quot;w-full rounded-lg bg-blue-600 py-2.5 text-white font-semibold
+                       hover:bg-blue-700 active:scale-[0.99]
+                       transition-all duration-200&quot;
+          &gt;
+            Sign In
+          &lt;/button&gt;
+        &lt;/form&gt;
+
+        {/* Footer */}
+        &lt;p className=&quot;mt-6 text-center text-sm text-gray-600&quot;&gt;
+          Don&amp;apos;t have an account?{&quot; &quot;}
+          &lt;Link
+            to=&quot;/register&quot;
+            className=&quot;font-medium text-blue-600 hover:underline&quot;
+          &gt;
+            Register
+          &lt;/Link&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+</div></code></pre>
+<h4 id="61-create-file-registerpagejsx">6.1 Create file <code>RegisterPage.jsx</code></h4>
+<pre class="hljs"><code><div>import { Link } from &quot;react-router-dom&quot;;
+
+export default function RegisterPage() {
+  return (
+    &lt;section className=&quot;flex-1 flex items-center justify-center bg-gray-100 px-4&quot;&gt;
+      &lt;div className=&quot;w-full max-w-md bg-white rounded-2xl border border-gray-300 p-8&quot;&gt;
+        {/* Title */}
+        &lt;h2 className=&quot;text-3xl font-bold text-center text-gray-800 mb-2&quot;&gt;
+          Create Account
+        &lt;/h2&gt;
+
+        {/* Form */}
+        &lt;form className=&quot;space-y-5&quot;&gt;
+          {/* Name */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Full Name
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;text&quot;
+              placeholder=&quot;Your name&quot;
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Email */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Email Address
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;email&quot;
+              placeholder=&quot;you@example.com&quot;
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Password */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Password
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;password&quot;
+              placeholder=&quot;••••••••&quot;
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Submit Button */}
+          &lt;button
+            type=&quot;submit&quot;
+            className=&quot;w-full rounded-lg bg-blue-600 py-2.5 text-white font-semibold
+                       hover:bg-blue-700 transition duration-200&quot;
+          &gt;
+            Create Account
+          &lt;/button&gt;
+        &lt;/form&gt;
+
+        {/* Footer */}
+        &lt;p className=&quot;mt-6 text-center text-sm text-gray-600&quot;&gt;
+          Already have an account?{&quot; &quot;}
+          &lt;Link
+            to=&quot;/login&quot;
+            className=&quot;font-medium text-blue-600 hover:underline&quot;
+          &gt;
+            Login
+          &lt;/Link&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+
+</div></code></pre>
+<hr>
+<h3 id="7-react-router-setup">7. React Router Setup</h3>
+<h4 id="71-wrap-app-with-browserrouter-in-srcmainjsx">7.1 Wrap <code>App</code> with <code>BrowserRouter</code> in <code>src/main.jsx</code></h4>
+<p>Enable routing by wrapping your App component.</p>
+<pre class="hljs"><code><div>import React from &quot;react&quot;;
+import ReactDOM from &quot;react-dom/client&quot;;
+import { BrowserRouter } from &quot;react-router-dom&quot;;
+import App from &quot;./App.jsx&quot;;
+import &quot;./index.css&quot;; 
+
+ReactDOM.createRoot(document.getElementById(&quot;root&quot;)).render(
+  &lt;React.StrictMode&gt;
+    &lt;BrowserRouter&gt;
+      &lt;App /&gt;
+    &lt;/BrowserRouter&gt;
+  &lt;/React.StrictMode&gt;
+);
+</div></code></pre>
+<h4 id="72-define-routes-in-srcappjsx">7.2 Define routes in <code>src/App.jsx</code></h4>
+<p>Map paths (<code>/</code>, <code>/register</code>, <code>/login</code>) to page components.</p>
+<pre class="hljs"><code><div>import { Routes, Route } from &quot;react-router-dom&quot;;
+import Navbar from &quot;./components/Navbar&quot;;
+import Footer from &quot;./components/Footer&quot;;
+import HomePage from &quot;./pages/HomePage.jsx&quot;;
+import LoginPage from &quot;./pages/LoginPage.jsx&quot;;
+import RegisterPage from &quot;./pages/RegisterPage.jsx&quot;;
+
+function App() {
+  return (
+    &lt;div className=&quot;flex flex-col min-h-screen&quot;&gt;
+      &lt;Navbar /&gt;
+
+      &lt;main className=&quot;flex-1 flex flex-col&quot;&gt;
+        &lt;Routes&gt;
+          &lt;Route path=&quot;/&quot; element={&lt;HomePage /&gt;} /&gt;
+          &lt;Route path=&quot;/register&quot; element={&lt;RegisterPage /&gt;} /&gt;
+          &lt;Route path=&quot;/login&quot; element={&lt;LoginPage /&gt;} /&gt;
+        &lt;/Routes&gt;
+      &lt;/main&gt;
+
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</div></code></pre>
+<hr>
+
+</body>
+</html>
