@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ReactJs-Part-2.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="lab-%E2%80%93-reactjs-part-2">Lab – ReactJS part 2</h1>
+<h2 id="login--register-with-supabase-react--vite">Login &amp; Register with Supabase (React + Vite)</h2>
+<h3 id="step-1-configure-supabase-authentication">Step 1: Configure Supabase Authentication</h3>
+<p>For development purposes, email confirmation will be disabled.</p>
+<h4 id="step-11-open-authentication-settings">Step 1.1: Open Authentication Settings</h4>
+<p>Navigate to <strong>Authentication</strong> in your Supabase Dashboard.<br>
+<img src="1.png" alt="Authentication"></p>
+<h4 id="step-12-open-sign-in-providers">Step 1.2: Open Sign-In Providers</h4>
+<p>Go to <strong>Sign In / Providers</strong>.<br>
+<img src="2.png" alt="Sign In/Providers"></p>
+<h4 id="step-13-disable-email-confirmation">Step 1.3: Disable Email Confirmation</h4>
+<p>Turn <strong>OFF</strong> the <strong>Confirm email</strong> option (development mode only).<br>
+<img src="3.png" alt="Confirm email"></p>
+<hr>
+<h3 id="step-2-configure-environment-variables">Step 2: Configure Environment Variables</h3>
+<p>Create a file named <strong><code>.env.local</code></strong> in the root of your project.</p>
+<pre class="hljs"><code><div>VITE_SUPABASE_URL=YOUR_PROJECT_URL
+VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE 
+
+</div></code></pre>
+<p>Replace <code>YOUR_PROJECT_URL</code> with your **Project url ** from the Supabase Dashboard.
+Replace <code>YOUR_ANON_KEY_HERE</code> with your **Publishable key ** from the Supabase Dashboard.</p>
+<h3 id="step-3-setup-supabase-client-in-your-project-by-install-dependencies">Step 3: Setup Supabase Client in your project by Install Dependencies</h3>
+<p><code>npm install @supabase/supabase-js react-router-dom</code></p>
+<hr>
+<h3 id="step-4-create-supabase-client">Step 4: Create Supabase Client</h3>
+<p>Create a Supabase client to connect your app.</p>
+<p><strong>File:</strong> <code>src/lib/supabaseClient.js</code></p>
+<pre class="hljs"><code><div>import { createClient } from &quot;@supabase/supabase-js&quot;;
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</div></code></pre>
+<hr>
+<h3 id="step-5-app-component--session-management">Step 5: App Component &amp; Session Management</h3>
+<p><strong>In File:</strong> <code>src/main.jsx</code></p>
+<pre class="hljs"><code><div>import React from &quot;react&quot;;
+import ReactDOM from &quot;react-dom/client&quot;;
+import { BrowserRouter } from &quot;react-router-dom&quot;;
+import App from &quot;./App.jsx&quot;;
+import &quot;./index.css&quot;;
+
+ReactDOM.createRoot(document.getElementById(&quot;root&quot;)).render(
+  &lt;React.StrictMode&gt;
+    &lt;BrowserRouter&gt;
+      &lt;App /&gt;
+    &lt;/BrowserRouter&gt;
+  &lt;/React.StrictMode&gt;
+);
+
+</div></code></pre>
+<p><strong>In File:</strong> <code>src/App.jsx</code></p>
+<pre class="hljs"><code><div>import { useEffect, useState } from &quot;react&quot;;
+import { Routes, Route } from &quot;react-router-dom&quot;;
+import { supabase } from &quot;./lib/supabaseClient&quot;;
+import Navbar from &quot;./components/Navbar&quot;;
+import Footer from &quot;./components/Footer&quot;;
+import HomePage from &quot;./pages/HomePage&quot;;
+import LoginPage from &quot;./pages/LoginPage&quot;;
+import RegisterPage from &quot;./pages/RegisterPage&quot;;
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() =&gt; {
+    async function checkSession() {
+      const { data } = await supabase.auth.getSession();
+      setUser(data?.session?.user || null);
+      setCheckingSession(false);
+    }
+
+    checkSession();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setUser(null);
+  }
+
+  function handleLoginSuccess(loggedInUser) {
+    setUser(loggedInUser);
+  }
+
+  if (checkingSession) {
+    return (
+      &lt;div className=&quot;min-h-screen flex items-center justify-center&quot;&gt;
+        &lt;p className=&quot;text-gray-600&quot;&gt;Checking session...&lt;/p&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div className=&quot;flex flex-col min-h-screen bg-gray-50&quot;&gt;
+      &lt;Navbar user={user} onLogout={handleLogout} /&gt;
+
+      &lt;main className=&quot;flex-1 container mx-auto px-4 py-6&quot;&gt;
+        &lt;Routes&gt;
+          &lt;Route path=&quot;/&quot; element={&lt;HomePage user={user} /&gt;} /&gt;
+          &lt;Route
+            path=&quot;/login&quot;
+            element={&lt;LoginPage onLoginSuccess={handleLoginSuccess} /&gt;}
+          /&gt;
+          &lt;Route path=&quot;/register&quot; element={&lt;RegisterPage /&gt;} /&gt;
+        &lt;/Routes&gt;
+      &lt;/main&gt;
+
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+</div></code></pre>
+<hr>
+<h3 id="step-6-implement-register-page-sign-up">Step 6. Implement Register Page (sign up)</h3>
+<p>To allows users to create a new account.</p>
+<p><strong>File:</strong> <code>src/pages/RegisterPage.jsx</code></p>
+<pre class="hljs"><code><div>import { useState } from &quot;react&quot;;
+import { useNavigate } from &quot;react-router-dom&quot;;
+import { supabase } from &quot;../lib/supabaseClient&quot;;
+
+export default function RegisterPage() {
+  const [email, setEmail] = useState(&quot;&quot;);
+  const [password, setPassword] = useState(&quot;&quot;);
+  const [confirmPassword, setConfirmPassword] = useState(&quot;&quot;);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    // simple password checks (keep or remove as you like)
+    if (password !== confirmPassword) {
+      setError(&quot;Passwords do not match&quot;);
+      return;
+    }
+
+    if (password.length &lt; 6) {
+      setError(&quot;Password must be at least 6 characters&quot;);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) {
+        setError(authError.message);
+      } else {
+        // no &quot;check your email&quot; message
+        setSuccess(&quot;Account created! You can log in now.&quot;);
+        setEmail(&quot;&quot;);
+        setPassword(&quot;&quot;);
+        setConfirmPassword(&quot;&quot;);
+        // optional: redirect to login quickly
+        setTimeout(() =&gt; navigate(&quot;/login&quot;), 1500);
+      }
+    } catch {
+      setError(&quot;An unexpected error occurred. Please try again.&quot;);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    &lt;section className=&quot;flex-1 flex items-center justify-center bg-gray-50 px-4&quot;&gt;
+      &lt;div className=&quot;w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8&quot;&gt;
+        &lt;h1 className=&quot;text-3xl font-bold mb-6 text-center&quot;&gt;Register&lt;/h1&gt;
+
+        &lt;form onSubmit={handleRegister} className=&quot;space-y-4&quot;&gt;
+          &lt;input
+            type=&quot;email&quot;
+            value={email}
+            disabled={loading}
+            onChange={(e) =&gt; setEmail(e.target.value)}
+            placeholder=&quot;Email&quot;
+            required
+            className=&quot;w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600&quot;
+          /&gt;
+
+          &lt;input
+            type=&quot;password&quot;
+            value={password}
+            disabled={loading}
+            onChange={(e) =&gt; setPassword(e.target.value)}
+            placeholder=&quot;Password&quot;
+            required
+            className=&quot;w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600&quot;
+          /&gt;
+
+          &lt;input
+            type=&quot;password&quot;
+            value={confirmPassword}
+            disabled={loading}
+            onChange={(e) =&gt; setConfirmPassword(e.target.value)}
+            placeholder=&quot;Confirm Password&quot;
+            required
+            className=&quot;w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600&quot;
+          /&gt;
+
+          {error &amp;&amp; (
+            &lt;p className=&quot;text-red-600 mb-1 text-sm&quot;&gt;
+              {error}
+            &lt;/p&gt;
+          )}
+
+          {success &amp;&amp; (
+            &lt;p className=&quot;text-green-600 mb-1 text-sm&quot;&gt;
+              {success}
+            &lt;/p&gt;
+          )}
+
+          &lt;button
+            type=&quot;submit&quot;
+            disabled={loading}
+            className=&quot;w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-500 disabled:bg-gray-400&quot;
+          &gt;
+            {loading ? &quot;Creating account...&quot; : &quot;Register&quot;}
+          &lt;/button&gt;
+        &lt;/form&gt;
+
+        &lt;p className=&quot;mt-4 text-center text-sm&quot;&gt;
+          Already have an account?{&quot; &quot;}
+          &lt;a href=&quot;/login&quot; className=&quot;text-blue-600 hover:underline&quot;&gt;
+            Login
+          &lt;/a&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+
+</div></code></pre>
+<h3 id="step-7-implement-login-page-sign-in">Step 7. Implement Login Page (sign in)</h3>
+<p>To allows registered users to log in.</p>
+<p><strong>File:</strong> <code>src/pages/LoginPage.jsx</code></p>
+<pre class="hljs"><code><div>import { useState } from &quot;react&quot;;
+import { Link, useNavigate } from &quot;react-router-dom&quot;;
+import { supabase } from &quot;../lib/supabaseClient&quot;;
+
+export default function LoginPage({ onLoginSuccess }) {
+  const [email, setEmail] = useState(&quot;&quot;);        // form state
+  const [password, setPassword] = useState(&quot;&quot;);
+  const [loading, setLoading] = useState(false); // loading state
+  const [error, setError] = useState(null);      // error message state
+
+  const navigate = useNavigate();
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { data, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+      if (authError) {
+        console.error(&quot;Supabase auth error:&quot;, authError);
+        setError(authError.message);
+      return;
+
+      } else {
+        // login success → save user in App and go Home
+        onLoginSuccess(data.user);
+        navigate(&quot;/&quot;);
+      }
+    } catch {
+      setError(&quot;An unexpected error occurred. Please try again.&quot;);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    &lt;section className=&quot;flex-1 flex items-center justify-center bg-gray-50 px-4&quot;&gt;
+      &lt;div className=&quot;w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8&quot;&gt;
+        {/* Title */}
+        &lt;h2 className=&quot;text-3xl font-bold text-center text-gray-800 mb-1&quot;&gt;
+          Welcome Back
+        &lt;/h2&gt;
+        &lt;p className=&quot;text-center text-sm text-gray-500 mb-4&quot;&gt;
+          Login to your account
+        &lt;/p&gt;
+
+        
+
+        {/* Form */}
+        &lt;form className=&quot;space-y-5&quot; onSubmit={handleLogin}&gt;
+          {/* Email */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Email Address
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;email&quot;
+              placeholder=&quot;you@example.com&quot;
+              value={email}
+              disabled={loading}
+              onChange={(e) =&gt; setEmail(e.target.value)}
+              required
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Password */}
+          &lt;div&gt;
+            &lt;label className=&quot;block text-sm font-medium text-gray-700 mb-1&quot;&gt;
+              Password
+            &lt;/label&gt;
+            &lt;input
+              type=&quot;password&quot;
+              placeholder=&quot;••••••••&quot;
+              value={password}
+              disabled={loading}
+              onChange={(e) =&gt; setPassword(e.target.value)}
+              required
+              className=&quot;w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
+                         placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600&quot;
+            /&gt;
+          &lt;/div&gt;
+
+          {/* Error */}
+          {error &amp;&amp; (
+            &lt;p className=&quot;mb-4 text-sm text-red-600 text-center&quot;&gt;
+              {error}
+            &lt;/p&gt;
+          )}
+
+          {/* Submit Button */}
+          &lt;button
+            type=&quot;submit&quot;
+            disabled={loading}
+            className=&quot;w-full rounded-lg bg-blue-600 py-2.5 text-white font-semibold
+                       hover:bg-blue-700 active:scale-[0.99]
+                       transition-all duration-200 disabled:bg-gray-400&quot;
+          &gt;
+            {loading ? &quot;Signing in...&quot; : &quot;Sign In&quot;}
+          &lt;/button&gt;
+        &lt;/form&gt;
+
+        {/* Footer */}
+        &lt;p className=&quot;mt-6 text-center text-sm text-gray-600&quot;&gt;
+          Don&amp;apos;t have an account?{&quot; &quot;}
+          &lt;Link
+            to=&quot;/register&quot;
+            className=&quot;font-medium text-blue-600 hover:underline&quot;
+          &gt;
+            Register
+          &lt;/Link&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+</div></code></pre>
+<hr>
+<h3 id="step-8-navbar-with-authentication-state-and-footer">Step 8: Navbar with Authentication State and Footer</h3>
+<p>The Navbar updates based on login status.</p>
+<p><strong>File:</strong> <code>src/components/Navbar.jsx</code></p>
+<pre class="hljs"><code><div>import { Link, useLocation } from &quot;react-router-dom&quot;;
+
+export default function Navbar({ user, onLogout }) {
+  const location = useLocation();
+
+  const linkClass =
+    &quot;px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100&quot;;
+
+  const activeClass =
+    &quot;px-3 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white&quot;;
+
+  return (
+    &lt;header className=&quot;bg-white shadow&quot;&gt;
+      &lt;nav className=&quot;container mx-auto flex items-center justify-between px-4 py-5&quot;&gt;
+
+        {/* Logo */}
+        &lt;Link to=&quot;/&quot; className=&quot;text-xl font-bold text-blue-600&quot;&gt;
+          MyReactApp
+        &lt;/Link&gt;
+
+        {/* Right side */}
+        &lt;div className=&quot;flex items-center gap-4&quot;&gt;
+
+          {/* Left group: navigation links */}
+          &lt;div className=&quot;flex gap-2&quot;&gt;
+            &lt;Link
+              to=&quot;/&quot;
+              className={location.pathname === &quot;/&quot; ? activeClass : linkClass}
+            &gt;
+              Home
+            &lt;/Link&gt;
+
+            {!user &amp;&amp; (
+              &lt;Link
+                to=&quot;/register&quot;
+                className={
+                  location.pathname === &quot;/register&quot; ? activeClass : linkClass
+                }
+              &gt;
+                Register
+              &lt;/Link&gt;
+            )}
+
+            &lt;div className=&quot;border&quot; /&gt;
+
+            {!user &amp;&amp; (
+              &lt;Link
+                to=&quot;/login&quot;
+                className={
+                  location.pathname === &quot;/login&quot; ? activeClass : linkClass
+                }
+              &gt;
+                Login
+              &lt;/Link&gt;
+            )}
+
+            {/* Right group: user info / logout */}
+            {user &amp;&amp; (
+              &lt;div&gt;
+                &lt;button
+                  onClick={onLogout}
+                  className=&quot;px-3 py-2 rounded-md text-sm font-semibold bg-red-600 text-white hover:bg-red-500&quot;
+                &gt;
+                  Logout
+                &lt;/button&gt;
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/nav&gt;
+    &lt;/header&gt;
+  );
+}
+</div></code></pre>
+<p><strong>File:</strong> <code>src/components/Footer.jsx</code></p>
+<pre class="hljs"><code><div>export default function Footer() {
+  return (
+    &lt;footer&gt;
+      &lt;div className=&quot;max-w-6xl mx-auto px-4 py-6 flex items-center justify-center&quot;&gt;
+        &lt;p className=&quot;text-sm &quot;&gt;
+          © {new Date().getFullYear()} MyReactSite. All rights reserved.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/footer&gt;
+  );
+}
+</div></code></pre>
+<hr>
+<h3 id="step-9-make-a-component-dashboard">Step 9: Make a component Dashboard</h3>
+<p>Create component dashboard for can call it to use any layer
+<strong>Files:</strong> <code>src/components/DashboardComponents.jsx</code></p>
+<pre class="hljs"><code><div>export function StatCard({ title, value, color = &quot;text-blue-600&quot; }) {
+  return (
+    &lt;div className=&quot;bg-white rounded-xl border shadow-sm p-5&quot;&gt;
+      &lt;p className=&quot;text-sm text-gray-500&quot;&gt;{title}&lt;/p&gt;
+      &lt;p className={`text-3xl font-bold mt-2 ${color}`}&gt;{value}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export function TableRow({ id, name, status }) {
+  const statusColor =
+    status === &quot;Active&quot;
+      ? &quot;text-green-600&quot;
+      : status === &quot;Pending&quot;
+      ? &quot;text-yellow-600&quot;
+      : &quot;text-red-600&quot;;
+
+  return (
+    &lt;tr&gt;
+      &lt;td className=&quot;px-6 py-3&quot;&gt;{id}&lt;/td&gt;
+      &lt;td className=&quot;px-6 py-3&quot;&gt;{name}&lt;/td&gt;
+      &lt;td className={`px-6 py-3 font-medium ${statusColor}`}&gt;
+        {status}
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  );
+}
+</div></code></pre>
+<h3 id="step-10-home-page--dashboard-component">Step 10: Home Page &amp; Dashboard Component</h3>
+<p>Displays different content depending on authentication status.</p>
+<p><strong>File:</strong> <code>src/pages/HomePage.jsx</code></p>
+<pre class="hljs"><code><div>import StemBuilding from &quot;../assets/stem.jpeg&quot;;
+import { StatCard, TableRow } from &quot;../components/DashboardComponents&quot;;
+
+export default function HomePage({ user }) {
+  // ================= DASHBOARD =================
+  if (user) {
+    return (
+      &lt;main className=&quot;bg-gray-50&quot;&gt;
+        &lt;div className=&quot;max-w-6xl mx-auto space-y-8&quot;&gt;
+
+          {/* Header */}
+          &lt;div className=&quot;flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border&quot;&gt;
+            &lt;div&gt;
+              &lt;h1 className=&quot;text-2xl md:text-3xl font-bold text-gray-800&quot;&gt;
+                Dashboard
+              &lt;/h1&gt;
+              &lt;p className=&quot;text-sm text-gray-500 mt-1&quot;&gt;
+                Welcome back,{&quot; &quot;}
+                &lt;span className=&quot;font-medium&quot;&gt;{user.email}&lt;/span&gt;
+              &lt;/p&gt;
+            &lt;/div&gt;
+
+            &lt;div className=&quot;w-12 h-12 rounded-full bg-gray-600 text-white flex items-center justify-center font-semibold text-lg shadow-sm&quot;&gt;
+              {user.email.charAt(0).toUpperCase()}
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          {/* Stats */}
+          &lt;div className=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4&quot;&gt;
+            &lt;StatCard title=&quot;Total Projects&quot; value=&quot;12&quot; /&gt;
+            &lt;StatCard title=&quot;Active&quot; value=&quot;8&quot; color=&quot;text-green-600&quot; /&gt;
+            &lt;StatCard title=&quot;Pending&quot; value=&quot;3&quot; color=&quot;text-yellow-600&quot; /&gt;
+            &lt;StatCard title=&quot;Inactive&quot; value=&quot;1&quot; color=&quot;text-red-600&quot; /&gt;
+          &lt;/div&gt;
+
+          {/* Table */}
+          &lt;div className=&quot;bg-white rounded-2xl shadow-sm border overflow-hidden&quot;&gt;
+            &lt;div className=&quot;px-6 py-4 border-b flex items-center justify-between&quot;&gt;
+              &lt;h2 className=&quot;text-lg font-semibold text-gray-800&quot;&gt;
+                Project Overview
+              &lt;/h2&gt;
+              &lt;span className=&quot;text-xs text-gray-500 uppercase&quot;&gt;
+                Sample Data
+              &lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div className=&quot;overflow-x-auto&quot;&gt;
+              &lt;table className=&quot;min-w-full text-sm&quot;&gt;
+                &lt;thead className=&quot;bg-gray-50 text-gray-600&quot;&gt;
+                  &lt;tr&gt;
+                    &lt;th className=&quot;px-6 py-3 text-left font-medium&quot;&gt;ID&lt;/th&gt;
+                    &lt;th className=&quot;px-6 py-3 text-left font-medium&quot;&gt;Name&lt;/th&gt;
+                    &lt;th className=&quot;px-6 py-3 text-left font-medium&quot;&gt;Status&lt;/th&gt;
+                  &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody className=&quot;divide-y&quot;&gt;
+                  &lt;TableRow id=&quot;1&quot; name=&quot;Sample Item A&quot; status=&quot;Active&quot; /&gt;
+                  &lt;TableRow id=&quot;2&quot; name=&quot;Sample Item B&quot; status=&quot;Pending&quot; /&gt;
+                  &lt;TableRow id=&quot;3&quot; name=&quot;Sample Item C&quot; status=&quot;Inactive&quot; /&gt;
+                &lt;/tbody&gt;
+              &lt;/table&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+      &lt;/main&gt;
+    );
+  }
+
+  // ================= PUBLIC PAGE =================
+  return (
+    &lt;main className=&quot;flex-1 flex flex-col items-center justify-center space-y-6&quot;&gt;
+      &lt;section className=&quot;flex text-start px-4 space-x-4&quot;&gt;
+        &lt;img
+          src={profilePic}
+          alt=&quot;Profile&quot;
+          className=&quot;w-40 h-40 rounded-full shadow-lg border-4 border-white&quot;
+        /&gt;
+        &lt;div className=&quot;space-y-4&quot;&gt;
+          &lt;h1 className=&quot;text-4xl md:text-5xl font-bold&quot;&gt;
+            Welcome to My React Site
+          &lt;/h1&gt;
+          &lt;p className=&quot;text-lg md:text-xl&quot;&gt;
+            Hello! I'm learning{&quot; &quot;}
+            &lt;span className=&quot;font-semibold text-blue-600&quot;&gt;React&lt;/span&gt;.
+          &lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
+      &lt;img src={StemBuilding} alt=&quot;StemBuilding&quot; className=&quot;max-w-3xl&quot; /&gt;
+    &lt;/main&gt;
+  );
+}
+</div></code></pre>
+<hr>
+<p><strong>Note: please follow previous lab to install tailwindcss and react-router</strong></p>
+<ul>
+<li>Install Tailwind CSS <code>npm install tailwindcss @tailwindcss/vite</code></li>
+<li>Install react-router <code>npm install react-router-dom</code></li>
+</ul>
+
+</body>
+</html>
