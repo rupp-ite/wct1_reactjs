@@ -1,8 +1,8 @@
 Lab – ReactJS part 2
 =  
-## Login & Register with Supabase (React + Vite)
+## Login & Register with Firebase (React + Vite)
 
-### Step 1: Configure Supabase Authentication
+### Step 1: Configure Firebase Authentication
 
 For development purposes, email confirmation will be disabled.
 
@@ -639,3 +639,4 @@ export default function HomePage({ user }) {
 **Note: please follow previous lab to install tailwindcss and react-router** 
 - Install Tailwind CSS `npm install tailwindcss @tailwindcss/vite`
 - Install react-router `npm install react-router-dom`
+- Git repository: ` https://github.com/rupp-ite/wct1_reactjs/tree/part2 `

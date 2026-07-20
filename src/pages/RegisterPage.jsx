@@ -1,6 +1,8 @@
+// src/pages/RegisterPage.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../lib/firebaseClient";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -8,15 +10,13 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  
   const navigate = useNavigate();
 
   async function handleRegister(e) {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
-    // simple password checks (keep or remove as you like)
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -30,91 +30,78 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const { error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-      } else {
-        // no "check your email" message
-        setSuccess("Account created! You can log in now.");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        // optional: redirect to login quickly
-        setTimeout(() => navigate("/login"), 1500);
-      }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
+      await createUserWithEmailAndPassword(auth, email, password);
+      navigate("/"); // Firebase logs users in directly after signup. Go home!
+    } catch (authError) {
+      console.error("Firebase registration error:", authError);
+      setError(authError.message.replace("Firebase: ", ""));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <section className="flex-1 flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Register</h1>
+    <section className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-12">
+      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <h1 className="text-3xl font-bold mb-1 text-center text-gray-800">Register</h1>
+        <p className="text-center text-sm text-gray-500 mb-6">Create a new account</p>
 
-        <form onSubmit={handleRegister} className="space-y-4">
-          <input
-            type="email"
-            value={email}
-            disabled={loading}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
+        <form onSubmit={handleRegister} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              disabled={loading}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            />
+          </div>
 
-          <input
-            type="password"
-            value={password}
-            disabled={loading}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              disabled={loading}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            />
+          </div>
 
-          <input
-            type="password"
-            value={confirmPassword}
-            disabled={loading}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm Password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              disabled={loading}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+            />
+          </div>
 
-          {error && (
-            <p className="text-red-600 mb-1 text-sm">
-              {error}
-            </p>
-          )}
-
-          {success && (
-            <p className="text-green-600 mb-1 text-sm">
-              {success}
-            </p>
-          )}
+          {error && <p className="text-red-600 text-center text-sm">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-500 disabled:bg-gray-400"
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 active:scale-[0.99] transition-all disabled:bg-gray-400"
           >
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm">
+        <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="font-medium text-blue-600 hover:underline">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </section>
