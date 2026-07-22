@@ -85,6 +85,7 @@ Create a new file named **firebaseClient.js** inside your **src/lib**/ folder:
     );
 
 **In File:** `src/App.jsx`
+
     // src/App.jsx
     import { useEffect, useState } from "react";
     import { Routes, Route, Navigate } from "react-router-dom";
