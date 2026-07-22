@@ -447,8 +447,8 @@ ReactDOM.createRoot(document.getElementById(&quot;root&quot;)).render(
   &lt;/React.StrictMode&gt;
 );
 </code></pre>
-<p><strong>In File:</strong> <code>src/App.jsx</code>
-// src/App.jsx
+<p><strong>In File:</strong> <code>src/App.jsx</code></p>
+<pre><code>// src/App.jsx
 import { useEffect, useState } from &quot;react&quot;;
 import { Routes, Route, Navigate } from &quot;react-router-dom&quot;;
 import { auth } from &quot;./lib/firebaseClient&quot;;
@@ -458,8 +458,9 @@ import Sidebar from &quot;./components/Sidebar&quot;;
 import Footer from &quot;./components/Footer&quot;;
 import HomePage from &quot;./pages/HomePage&quot;;
 import LoginPage from &quot;./pages/LoginPage&quot;;
-import RegisterPage from &quot;./pages/RegisterPage&quot;;</p>
-<pre><code>export default function App() {
+import RegisterPage from &quot;./pages/RegisterPage&quot;;
+
+export default function App() {
   const [user, setUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
   
