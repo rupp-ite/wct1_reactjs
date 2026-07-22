@@ -1,6 +1,6 @@
 import profilePic from "../assets/profile.jpg";
 import StemBuilding from "../assets/stem.jpeg";
-import { StatCard, TableRow } from "../components/DashboardComponents";
+import { StatCard, TableRow } from "../components/Dashboard";
 
 export default function HomePage({ user }) {
   // ================= DASHBOARD =================

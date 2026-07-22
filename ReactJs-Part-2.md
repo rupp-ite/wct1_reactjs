@@ -2,638 +2,670 @@ Lab – ReactJS part 2
 =  
 ## Login & Register with Firebase (React + Vite)
 
-### Step 1: Configure Firebase Authentication
+### Step 1: Create and Configure Your Firebase Project
 
-For development purposes, email confirmation will be disabled.
+#### Step 1.1: Step 1: Create the Project in Firebase Console
+Go to: https://console.firebase.google.com, sign in with gmail account
+![alt text](image.png)
+- Click "**Create a new Firebase project**"
+- Enter a project name (e.g., my-react-app) and click Continue.
+- Choose wether you want Gemini enabled (you can turn it off for a basic project), click **Continue**
+- Choose whether you want Google Analytics enabled (you can turn it off for a basic project), then click **Create project**.
+- Wait for the setup to complete and click Continue to enter your project dashboard.
 
-#### Step 1.1: Open Authentication Settings
-Navigate to **Authentication** in your Supabase Dashboard.  
-![Authentication](1.png)
+#### Step 1.2: Enable Email & Password Authentication
+- In the left-hand sidebar menu, click on **Security->Authentication**.
+![alt text](image-1.png)
+- Click the **Get started** button.
+- Under the Sign-in method tab, look at the Native providers list and click on **Email/Password**.
+- **Toggle** the **Email/Password** switch to **Enabled**. (Leave Email link (passwordless sign-in) disabled unless you explicitly want it).
+![alt text](image-2.png)
+- Click **"Save"**
 
-#### Step 1.2: Open Sign-In Providers
-Go to **Sign In / Providers**.  
-![Sign In/Providers](2.png)
+#### Step 1.3: Register Your Web App to Get Keys
+- Go back to your **Project Overview dashboard** page
+![alt text](image-3.png)
+- Click "**+ Add app**" button -> "**</>**" button
+- Enter an app nickname (e.g., My-React-Webapp) and click Register app.
+![alt text](image-4.png)
+- Firebase will display an initialization code block containing a firebaseConfig object. It looks like this:
+![alt text](image-5.png)
+- Keep this tab open or copy those values! You will need them for your local environment variables.
 
-#### Step 1.3: Disable Email Confirmation
-Turn **OFF** the **Confirm email** option (development mode only).  
-![Confirm email](3.png)
+### Step 2: Update Your Local React Project
+#### Step 2.1: Save Keys in Your Environment Variables
+Create/edit a file named **`.env.local`** in the root of your project.
 
----
+    VITE_FIREBASE_API_KEY="AIzaSyBUiuBN56ftA34WmQW7AJnHG98wJx4GgIE"
+    VITE_FIREBASE_AUTH_DOMAIN="wct1-app.firebaseapp.com"
+    VITE_FIREBASE_PROJECT_ID="wct1-app"
+    VITE_FIREBASE_STORAGE_BUCKET="wct1-app.firebasestorage.app"
+    VITE_FIREBASE_MESSAGING_SENDER_ID="1071075088616"
+    VITE_FIREBASE_APP_ID="1:1071075088616:web:fee80e3e6c0db8a4dd915d" 
 
-### Step 2: Configure Environment Variables
-Create a file named **`.env.local`** in the root of your project.
-```
-VITE_SUPABASE_URL=YOUR_PROJECT_URL
-VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE 
 
-```
+#### Step 2.2: Install the Firebase Package
+    npm install firebase
+#### Step 2.3: Create Your Firebase Client File
+Create a new file named **firebaseClient.js** inside your **src/lib**/ folder:
 
-Replace `YOUR_PROJECT_URL` with your **Project url ** from the Supabase Dashboard.
-Replace `YOUR_ANON_KEY_HERE` with your **Publishable key ** from the Supabase Dashboard.
+**File:** `src/lib/firebaseClient.js`
 
-### Step 3: Setup Supabase Client in your project by Install Dependencies
-`npm install @supabase/supabase-js react-router-dom`
+    // src/lib/firebaseClient.js
+    import { initializeApp } from "firebase/app";
+    import { getAuth } from "firebase/auth";
 
----
+    const firebaseConfig = {
+      apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId: import.meta.env.VITE_FIREBASE_APP_ID
+    };
 
-### Step 4: Create Supabase Client
-Create a Supabase client to connect your app.
+    const app = initializeApp(firebaseConfig);
+    export const auth = getAuth(app);
 
-**File:** `src/lib/supabaseClient.js`
-
-```
-import { createClient } from "@supabase/supabase-js";
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-```
-
----
-
-### Step 5: App Component & Session Management
+### Step 3: App Component & Session Management
 **In File:** `src/main.jsx`
-```
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App.jsx";
-import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+    import React from "react";
+    import ReactDOM from "react-dom/client";
+    import { BrowserRouter } from "react-router-dom";
+    import App from "./App.jsx";
+    import "./index.css";
 
-```
+    ReactDOM.createRoot(document.getElementById("root")).render(
+      <React.StrictMode>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </React.StrictMode>
+    );
 
 **In File:** `src/App.jsx`
-```
-import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import { supabase } from "./lib/supabaseClient";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+    // src/App.jsx
+    import { useEffect, useState } from "react";
+    import { Routes, Route, Navigate } from "react-router-dom";
+    import { auth } from "./lib/firebaseClient";
+    import { onAuthStateChanged, signOut } from "firebase/auth";
+    import Navbar from "./components/Navbar";
+    import Sidebar from "./components/Sidebar";
+    import Footer from "./components/Footer";
+    import HomePage from "./pages/HomePage";
+    import LoginPage from "./pages/LoginPage";
+    import RegisterPage from "./pages/RegisterPage";
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [checkingSession, setCheckingSession] = useState(true);
+    export default function App() {
+      const [user, setUser] = useState(null);
+      const [checkingSession, setCheckingSession] = useState(true);
+      
+      // Set default to true so it's open on desktop initially, but fully toggleable!
+      const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
 
-  useEffect(() => {
-    async function checkSession() {
-      const { data } = await supabase.auth.getSession();
-      setUser(data?.session?.user || null);
-      setCheckingSession(false);
+      useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+          setUser(currentUser || null);
+          setCheckingSession(false);
+          // Auto-close or open based on login status
+          setIsSidebarOpen(!!currentUser);
+        });
+        return () => unsubscribe();
+      }, []);
+
+      async function handleLogout() {
+        try {
+          await signOut(auth);
+          setIsSidebarOpen(false);
+        } catch (err) {
+          console.error("Error signing out:", err);
+        }
+      }
+
+      if (checkingSession) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <p className="text-gray-600 animate-pulse font-medium">Checking session...</p>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
+          {/* Top Header Control Banner */}
+          <Navbar 
+            user={user} 
+            onLogout={handleLogout} 
+            isSidebarOpen={isSidebarOpen} 
+            setIsSidebarOpen={setIsSidebarOpen} 
+          />
+
+          <div className="flex flex-1 pt-16 relative">
+            {/* Left Off-Canvas Sidebar Panels */}
+            {user && (
+              <Sidebar 
+                user={user} 
+                isOpen={isSidebarOpen} 
+                setIsOpen={setIsSidebarOpen} 
+              />
+            )}
+
+            {/* Dynamic Content Viewport - Padding shifts based on sidebar toggle status */}
+            <main className={`flex-1 p-4 md:p-6 transition-all duration-300 ${user && isSidebarOpen ? 'md:pl-64' : 'md:pl-0'}`}>
+              <Routes>
+                <Route path="/" element={<HomePage user={user} />} />
+                <Route 
+                  path="/login" 
+                  element={!user ? <LoginPage /> : <Navigate to="/" replace />} 
+                />
+                <Route 
+                  path="/register" 
+                  element={!user ? <RegisterPage /> : <Navigate to="/" replace />} 
+                />
+              </Routes>
+            </main>
+          </div>
+
+          {/* Footer adjustments to match current layout space */}
+          <div className={`transition-all duration-300 ${user && isSidebarOpen ? 'md:pl-64' : 'md:pl-0'}`}>
+            <Footer />
+          </div>
+        </div>
+      );
     }
 
-    checkSession();
-  }, []);
+### Step 4. Implement Pages
+#### 4.1 Home Page
+**File** `src/pages/HomePage.jsx`
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    setUser(null);
-  }
+    //src/pages/HomePage.jsx
+    import profilePic from "../assets/profile.jpg";
+    import StemBuilding from "../assets/stem.jpeg";
+    import { StatCard, TableRow } from "../components/Dashboard";
 
-  function handleLoginSuccess(loggedInUser) {
-    setUser(loggedInUser);
-  }
+    export default function HomePage({ user }) {
+      // ================= DASHBOARD =================
+      if (user) {
+        return (
+          <main className="bg-gray-50">
+            <div className="max-w-6xl mx-auto space-y-8">
 
-  if (checkingSession) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Checking session...</p>
-      </div>
-    );
-  }
+              {/* Header */}
+              <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+                    Dashboard
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Welcome back,{" "}
+                    <span className="font-medium">{user.email}</span>
+                  </p>
+                </div>
 
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={handleLogout} />
+                <div className="w-12 h-12 rounded-full bg-gray-600 text-white flex items-center justify-center font-semibold text-lg shadow-sm">
+                  {user.email.charAt(0).toUpperCase()}
+                </div>
+              </div>
 
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <Routes>
-          <Route path="/" element={<HomePage user={user} />} />
-          <Route
-            path="/login"
-            element={<LoginPage onLoginSuccess={handleLoginSuccess} />}
-          />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </main>
+              {/* Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard title="Total Projects" value="12" />
+                <StatCard title="Active" value="8" color="text-green-600" />
+                <StatCard title="Pending" value="3" color="text-yellow-600" />
+                <StatCard title="Inactive" value="1" color="text-red-600" />
+              </div>
 
-      <Footer />
-    </div>
-  );
-}
-```
+              {/* Table */}
+              <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                <div className="px-6 py-4 border-b flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Project Overview
+                  </h2>
+                  <span className="text-xs text-gray-500 uppercase">
+                    Sample Data
+                  </span>
+                </div>
 
----
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead className="bg-gray-50 text-gray-600">
+                      <tr>
+                        <th className="px-6 py-3 text-left font-medium">ID</th>
+                        <th className="px-6 py-3 text-left font-medium">Name</th>
+                        <th className="px-6 py-3 text-left font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      <TableRow id="1" name="Sample Item A" status="Active" />
+                      <TableRow id="2" name="Sample Item B" status="Pending" />
+                      <TableRow id="3" name="Sample Item C" status="Inactive" />
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-### Step 6. Implement Register Page (sign up)
+            </div>
+          </main>
+        );
+      }
+
+      // ================= PUBLIC PAGE =================
+      return (
+        <main className="flex-1 flex flex-col items-center justify-center space-y-6">
+          <section className="flex text-start px-4 space-x-4">
+            <img
+              src={profilePic}
+              alt="Profile"
+              className="w-40 h-40 rounded-full shadow-lg border-4 border-white"
+            />
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl font-bold">
+                Welcome to My React Site
+              </h1>
+              <p className="text-lg md:text-xl">
+                Hello! I'm learning{" "}
+                <span className="font-semibold text-blue-600">React</span>.
+              </p>
+            </div>
+          </section>
+
+          <img src={StemBuilding} alt="StemBuilding" className="max-w-3xl" />
+        </main>
+      );
+    }
+
+#### 4.2 Register Page (sign up)
 To allows users to create a new account.
 
 **File:** `src/pages/RegisterPage.jsx`
 
-```
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
+    // src/pages/RegisterPage.jsx
+    import { useState } from "react";
+    import { Link, useNavigate } from "react-router-dom";
+    import { auth } from "../lib/firebaseClient";
+    import { createUserWithEmailAndPassword } from "firebase/auth";
 
-export default function RegisterPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const navigate = useNavigate();
+    export default function RegisterPage() {
+      const [email, setEmail] = useState("");
+      const [password, setPassword] = useState("");
+      const [confirmPassword, setConfirmPassword] = useState("");
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+      
+      const navigate = useNavigate();
 
-  async function handleRegister(e) {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
+      async function handleRegister(e) {
+        e.preventDefault();
+        setError(null);
 
-    // simple password checks (keep or remove as you like)
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+        if (password !== confirmPassword) {
+          setError("Passwords do not match");
+          return;
+        }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
+        if (password.length < 6) {
+          setError("Password must be at least 6 characters");
+          return;
+        }
 
-    setLoading(true);
+        setLoading(true);
 
-    try {
-      const { error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-      } else {
-        // no "check your email" message
-        setSuccess("Account created! You can log in now.");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        // optional: redirect to login quickly
-        setTimeout(() => navigate("/login"), 1500);
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          navigate("/"); // Firebase logs users in directly after signup. Go home!
+        } catch (authError) {
+          console.error("Firebase registration error:", authError);
+          setError(authError.message.replace("Firebase: ", ""));
+        } finally {
+          setLoading(false);
+        }
       }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+
+      return (
+        <section className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-12">
+          <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+            <h1 className="text-3xl font-bold mb-1 text-center text-gray-800">Register</h1>
+            <p className="text-center text-sm text-gray-500 mb-6">Create a new account</p>
+
+            <form onSubmit={handleRegister} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  value={email}
+                  disabled={loading}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  disabled={loading}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  disabled={loading}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                />
+              </div>
+
+              {error && <p className="text-red-600 text-center text-sm">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 active:scale-[0.99] transition-all disabled:bg-gray-400"
+              >
+                {loading ? "Creating account..." : "Register"}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link to="/login" className="font-medium text-blue-600 hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
+        </section>
+      );
     }
-  }
 
-  return (
-    <section className="flex-1 flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Register</h1>
-
-        <form onSubmit={handleRegister} className="space-y-4">
-          <input
-            type="email"
-            value={email}
-            disabled={loading}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
-
-          <input
-            type="password"
-            value={password}
-            disabled={loading}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
-
-          <input
-            type="password"
-            value={confirmPassword}
-            disabled={loading}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm Password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
-
-          {error && (
-            <p className="text-red-600 mb-1 text-sm">
-              {error}
-            </p>
-          )}
-
-          {success && (
-            <p className="text-green-600 mb-1 text-sm">
-              {success}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-500 disabled:bg-gray-400"
-          >
-            {loading ? "Creating account..." : "Register"}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Login
-          </a>
-        </p>
-      </div>
-    </section>
-  );
-}
-
-```
-
-### Step 7. Implement Login Page (sign in)
+#### 4.3. Implement Login Page (sign in)
 To allows registered users to log in.
 
 **File:** `src/pages/LoginPage.jsx`
-```
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
 
-export default function LoginPage({ onLoginSuccess }) {
-  const [email, setEmail] = useState("");        // form state
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // loading state
-  const [error, setError] = useState(null);      // error message state
+    import { useState } from "react";
+    import { Link, useNavigate } from "react-router-dom";
+    import { auth } from "../lib/firebaseClient";
+    import { signInWithEmailAndPassword } from "firebase/auth";
 
-  const navigate = useNavigate();
+    export default function LoginPage() {
+      const [email, setEmail] = useState("");        // form state
+      const [password, setPassword] = useState("");
+      const [loading, setLoading] = useState(false); // loading state
+      const [error, setError] = useState(null);      // error message state
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+      const navigate = useNavigate();
 
-    try {
-      const { data, error: authError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      async function handleLogin(e) {
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
 
-      if (authError) {
-        console.error("Supabase auth error:", authError);
-        setError(authError.message);
-      return;
-
-      } else {
-        // login success → save user in App and go Home
-        onLoginSuccess(data.user);
-        navigate("/");
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          navigate("/"); // The App.jsx global listener automatically handles state update!
+        } catch (authError) {
+          console.error("Firebase login error:", authError);
+          setError(authError.message.replace("Firebase: ", ""));
+        } finally {
+          setLoading(false);
+        }
       }
-    } catch {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  return (
-    <section className="flex-1 flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8">
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-1">
-          Welcome Back
-        </h2>
-        <p className="text-center text-sm text-gray-500 mb-4">
-          Login to your account
-        </p>
+      return (
+        <section className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-12">
+          <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+            <h2 className="text-3xl font-bold text-center text-gray-800 mb-1">Welcome Back</h2>
+            <p className="text-center text-sm text-gray-500 mb-6">Login to your account</p>
 
-        
+            <form className="space-y-5" onSubmit={handleLogin}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  disabled={loading}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                />
+              </div>
 
-        {/* Form */}
-        <form className="space-y-5" onSubmit={handleLogin}>
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              disabled={loading}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
-                         placeholder-gray-400
-                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-            />
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  disabled={loading}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                />
+              </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              disabled={loading}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm
-                         placeholder-gray-400
-                         focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-            />
-          </div>
+              {error && <p className="text-sm text-red-600 text-center">{error}</p>}
 
-          {/* Error */}
-          {error && (
-            <p className="mb-4 text-sm text-red-600 text-center">
-              {error}
-            </p>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-blue-600 py-2.5 text-white font-semibold
-                       hover:bg-blue-700 active:scale-[0.99]
-                       transition-all duration-200 disabled:bg-gray-400"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        {/* Footer */}
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link
-            to="/register"
-            className="font-medium text-blue-600 hover:underline"
-          >
-            Register
-          </Link>
-        </p>
-      </div>
-    </section>
-  );
-}
-```
-
----
-
-### Step 8: Navbar with Authentication State and Footer
-The Navbar updates based on login status.
-
-**File:** `src/components/Navbar.jsx`
-
-```
-import { Link, useLocation } from "react-router-dom";
-
-export default function Navbar({ user, onLogout }) {
-  const location = useLocation();
-
-  const linkClass =
-    "px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100";
-
-  const activeClass =
-    "px-3 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white";
-
-  return (
-    <header className="bg-white shadow">
-      <nav className="container mx-auto flex items-center justify-between px-4 py-5">
-
-        {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-blue-600">
-          MyReactApp
-        </Link>
-
-        {/* Right side */}
-        <div className="flex items-center gap-4">
-
-          {/* Left group: navigation links */}
-          <div className="flex gap-2">
-            <Link
-              to="/"
-              className={location.pathname === "/" ? activeClass : linkClass}
-            >
-              Home
-            </Link>
-
-            {!user && (
-              <Link
-                to="/register"
-                className={
-                  location.pathname === "/register" ? activeClass : linkClass
-                }
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-blue-600 py-2.5 text-white font-semibold hover:bg-blue-700 active:scale-[0.99] transition-all disabled:bg-gray-400"
               >
+                {loading ? "Signing in..." : "Sign In"}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link to="/register" className="font-medium text-blue-600 hover:underline">
                 Register
               </Link>
-            )}
+            </p>
+          </div>
+        </section>
+      );
+    }
 
-            <div className="border" />
+### Step 5: Components
+#### 5.1 Navbar Component
+The Navbar updates based on login status.
+**File:** `src/components/Navbar.jsx`
 
-            {!user && (
-              <Link
-                to="/login"
-                className={
-                  location.pathname === "/login" ? activeClass : linkClass
-                }
-              >
-                Login
+    // src/components/Navbar.jsx
+    import { Link } from "react-router-dom";
+
+    export default function Navbar({ user, onLogout, isSidebarOpen, setIsSidebarOpen }) {
+      return (
+        <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 h-16 z-50">
+          <nav className="h-full px-4 flex items-center justify-between">
+            
+            {/* Left Side Group: Logo first, then the Toggle Button */}
+            <div className="flex items-center gap-10">
+              <Link to="/" className="text-xl font-bold text-blue-600 tracking-tight">
+                My Web App
               </Link>
-            )}
 
-            {/* Right group: user info / logout */}
-            {user && (
-              <div>
+              {user && (
                 <button
-                  onClick={onLogout}
-                  className="px-3 py-2 rounded-md text-sm font-semibold bg-red-600 text-white hover:bg-red-500"
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors focus:outline-none"
+                  aria-label="Toggle Navigation Drawer"
                 >
-                  Logout
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {isSidebarOpen ? (
+                      // Close Icon Shape
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      // Menu Hamburger Icon Shape
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
                 </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-    </header>
-  );
-}
-```
+              )}
+            </div>
 
+            {/* Right Side Group: User Action Links */}
+            <div className="flex items-center gap-4">
+              {!user ? (
+                <div className="flex items-center gap-2">
+                  <Link to="/register" className="px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                    Register
+                  </Link>
+                  <Link to="/login" className="px-3 py-1.5 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm">
+                    Login
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <span className="text-sm font-medium text-gray-500 hidden sm:inline">
+                    {user.email}
+                  </span>
+                  <button
+                    onClick={onLogout}
+                    className="px-3 py-1.5 rounded-md text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-colors shadow-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </nav>
+        </header>
+      );
+    }
+#### 5.2 Footer Component
 **File:** `src/components/Footer.jsx`
-```
-export default function Footer() {
-  return (
-    <footer>
-      <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-center">
-        <p className="text-sm ">
-          © {new Date().getFullYear()} MyReactSite. All rights reserved.
-        </p>
-      </div>
-    </footer>
-  );
-}
-```
 
----
-### Step 9: Make a component Dashboard
-Create component dashboard for can call it to use any layer
-**Files:** `src/components/DashboardComponents.jsx`
-```
-export function StatCard({ title, value, color = "text-blue-600" }) {
-  return (
-    <div className="bg-white rounded-xl border shadow-sm p-5">
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className={`text-3xl font-bold mt-2 ${color}`}>{value}</p>
-    </div>
-  );
-}
-
-export function TableRow({ id, name, status }) {
-  const statusColor =
-    status === "Active"
-      ? "text-green-600"
-      : status === "Pending"
-      ? "text-yellow-600"
-      : "text-red-600";
-
-  return (
-    <tr>
-      <td className="px-6 py-3">{id}</td>
-      <td className="px-6 py-3">{name}</td>
-      <td className={`px-6 py-3 font-medium ${statusColor}`}>
-        {status}
-      </td>
-    </tr>
-  );
-}
-```
-
-
-
-### Step 10: Home Page & Dashboard Component
-Displays different content depending on authentication status.
-
-**File:** `src/pages/HomePage.jsx`
-
-```import profilePic from "../assets/profile.jpg";
-import StemBuilding from "../assets/stem.jpeg";
-import { StatCard, TableRow } from "../components/DashboardComponents";
-
-export default function HomePage({ user }) {
-  // ================= DASHBOARD =================
-  if (user) {
-    return (
-      <main className="bg-gray-50">
-        <div className="max-w-6xl mx-auto space-y-8">
-
-          {/* Header */}
-          <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                Dashboard
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Welcome back,{" "}
-                <span className="font-medium">{user.email}</span>
-              </p>
-            </div>
-
-            <div className="w-12 h-12 rounded-full bg-gray-600 text-white flex items-center justify-center font-semibold text-lg shadow-sm">
-              {user.email.charAt(0).toUpperCase()}
-            </div>
+    export default function Footer() {
+      return (
+        <footer>
+          <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-center">
+            <p className="text-sm ">
+              © {new Date().getFullYear()} MyReactSite. All rights reserved.
+            </p>
           </div>
+        </footer>
+      );
+    }
+#### 5.3 Sidebar Component
+**File** `src/components/Sidebar.jsx`
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard title="Total Projects" value="12" />
-            <StatCard title="Active" value="8" color="text-green-600" />
-            <StatCard title="Pending" value="3" color="text-yellow-600" />
-            <StatCard title="Inactive" value="1" color="text-red-600" />
-          </div>
+    // src/components/Sidebar.jsx
+    import { Link, useLocation } from "react-router-dom";
 
-          {/* Table */}
-          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-            <div className="px-6 py-4 border-b flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Project Overview
-              </h2>
-              <span className="text-xs text-gray-500 uppercase">
-                Sample Data
-              </span>
+    export default function Sidebar({ user, isOpen, setIsOpen }) {
+      const location = useLocation();
+
+      const menuItems = [
+        { name: "Dashboard", path: "/" },
+        { name: "Projects Overview", path: "#" },
+        { name: "User Management", path: "#" },
+        { name: "Analytics Logs", path: "#" },
+        { name: "System Settings", path: "#" },
+      ];
+
+      const linkClass = "flex items-center px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors";
+      const activeClass = "flex items-center px-4 py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-sm transition-colors";
+
+      return (
+        <>
+          {/* Mobile-only Background Overlay Backdrop Mask (Dismisses layout panel when tapping outside) */}
+          {isOpen && (
+            <div 
+              className="fixed inset-0 bg-gray-900/30 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setIsOpen(false)}
+            />
+          )}
+
+          {/* Toggleable Drawer Viewport Container Panel */}
+          <aside 
+            className={`fixed top-16 bottom-0 left-0 w-64 bg-white border-r border-gray-200 z-40 p-4 flex flex-col justify-between transition-transform duration-300 ${
+              isOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            <div className="space-y-6">
+              {/* Menu Category Info Text */}
+              <div className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Admin Management
+              </div>
+
+              {/* Core App Navigation Link Group */}
+              <nav className="space-y-1">
+                {menuItems.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={item.path}
+                    // Only trigger automatic close on small touch devices
+                    onClick={() => {
+                      if (window.innerWidth < 768) setIsOpen(false);
+                    }}
+                    className={location.pathname === item.path ? activeClass : linkClass}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr>
-                    <th className="px-6 py-3 text-left font-medium">ID</th>
-                    <th className="px-6 py-3 text-left font-medium">Name</th>
-                    <th className="px-6 py-3 text-left font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  <TableRow id="1" name="Sample Item A" status="Active" />
-                  <TableRow id="2" name="Sample Item B" status="Pending" />
-                  <TableRow id="3" name="Sample Item C" status="Inactive" />
-                </tbody>
-              </table>
+            {/* Bottom Profile Details Row */}
+            <div className="border-t border-gray-200 pt-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm select-none">
+                {user?.email?.charAt(0).toUpperCase()}
+              </div>
+              <div className="truncate max-w-[160px]">
+                <p className="text-xs font-semibold text-gray-800 truncate">{user?.email}</p>
+                <p className="text-[10px] text-gray-400 font-medium">System Administrator</p>
+              </div>
             </div>
-          </div>
+          </aside>
+        </>
+      );
+    }
 
+#### 5.4 Dasboard Component
+
+**Files:** `src/components/Dashboard.jsx`
+
+    export function StatCard({ title, value, color = "text-blue-600" }) {
+      return (
+        <div className="bg-white rounded-xl border shadow-sm p-5">
+          <p className="text-sm text-gray-500">{title}</p>
+          <p className={`text-3xl font-bold mt-2 ${color}`}>{value}</p>
         </div>
-      </main>
-    );
-  }
+      );
+    }
 
-  // ================= PUBLIC PAGE =================
-  return (
-    <main className="flex-1 flex flex-col items-center justify-center space-y-6">
-      <section className="flex text-start px-4 space-x-4">
-        <img
-          src={profilePic}
-          alt="Profile"
-          className="w-40 h-40 rounded-full shadow-lg border-4 border-white"
-        />
-        <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">
-            Welcome to My React Site
-          </h1>
-          <p className="text-lg md:text-xl">
-            Hello! I'm learning{" "}
-            <span className="font-semibold text-blue-600">React</span>.
-          </p>
-        </div>
-      </section>
+    export function TableRow({ id, name, status }) {
+      const statusColor =
+        status === "Active"
+          ? "text-green-600"
+          : status === "Pending"
+          ? "text-yellow-600"
+          : "text-red-600";
 
-      <img src={StemBuilding} alt="StemBuilding" className="max-w-3xl" />
-    </main>
-  );
-}
-```
----
+      return (
+        <tr>
+          <td className="px-6 py-3">{id}</td>
+          <td className="px-6 py-3">{name}</td>
+          <td className={`px-6 py-3 font-medium ${statusColor}`}>
+            {status}
+          </td>
+        </tr>
+      );
+    }
 
 
 **Note: please follow previous lab to install tailwindcss and react-router** 
