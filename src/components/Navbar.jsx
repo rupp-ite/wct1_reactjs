@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 
 export default function Navbar({ user, onLogout, isSidebarOpen, setIsSidebarOpen }) {
@@ -6,24 +5,25 @@ export default function Navbar({ user, onLogout, isSidebarOpen, setIsSidebarOpen
     <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 h-16 z-50">
       <nav className="h-full px-4 flex items-center justify-between">
         
-        {/* Left Side Group: Logo first, then the Toggle Button */}
-        <div className="flex items-center gap-10">
-          <Link to="/" className="text-xl font-bold text-blue-600 tracking-tight">
-            My Web App
+        {/* Brand Logo links to /admin if logged in, or / if guest */}
+        <div className="flex items-center gap-3">
+          <Link 
+            to={user ? "/admin" : "/"} 
+            className="text-xl font-bold text-blue-600 tracking-tight"
+          >
+            {user ? "Admin Portal" : "My Blog"}
           </Link>
 
           {user && (
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors focus:outline-none"
-              aria-label="Toggle Navigation Drawer"
+              aria-label="Toggle Sidebar"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isSidebarOpen ? (
-                  // Close Icon Shape
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  // Menu Hamburger Icon Shape
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
@@ -31,7 +31,7 @@ export default function Navbar({ user, onLogout, isSidebarOpen, setIsSidebarOpen
           )}
         </div>
 
-        {/* Right Side Group: User Action Links */}
+        {/* User Auth Controls */}
         <div className="flex items-center gap-4">
           {!user ? (
             <div className="flex items-center gap-2">
@@ -44,9 +44,6 @@ export default function Navbar({ user, onLogout, isSidebarOpen, setIsSidebarOpen
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-gray-500 hidden sm:inline">
-                {user.email}
-              </span>
               <button
                 onClick={onLogout}
                 className="px-3 py-1.5 rounded-md text-sm font-semibold bg-red-600 text-white hover:bg-red-500 transition-colors shadow-sm"

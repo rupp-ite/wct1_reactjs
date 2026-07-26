@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { auth } from "./lib/firebaseClient";
@@ -7,21 +6,21 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
+import PostDetailPage from "./pages/PostDetailPage";
+import AdminPortalPage from "./pages/AdminPortalPage";
+import PostsManager from "./pages/PostsManager";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
-  
-  // Set default to true so it's open on desktop initially, but fully toggleable!
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser || null);
       setCheckingSession(false);
-      // Auto-close or open based on login status
       setIsSidebarOpen(!!currentUser);
     });
     return () => unsubscribe();
@@ -46,7 +45,6 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
-      {/* Top Header Control Banner */}
       <Navbar 
         user={user} 
         onLogout={handleLogout} 
@@ -55,7 +53,6 @@ export default function App() {
       />
 
       <div className="flex flex-1 pt-16 relative">
-        {/* Left Off-Canvas Sidebar Panels */}
         {user && (
           <Sidebar 
             user={user} 
@@ -64,23 +61,35 @@ export default function App() {
           />
         )}
 
-        {/* Dynamic Content Viewport - Padding shifts based on sidebar toggle status */}
         <main className={`flex-1 p-4 md:p-6 transition-all duration-300 ${user && isSidebarOpen ? 'md:pl-64' : 'md:pl-0'}`}>
           <Routes>
-            <Route path="/" element={<HomePage user={user} />} />
+            {/* Public Routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/post/:id" element={<PostDetailPage />} />
+            
+            {/* Admin Portal Protected Routes */}
+            <Route 
+              path="/admin" 
+              element={user ? <AdminPortalPage user={user} /> : <Navigate to="/login" replace />} 
+            />
+            <Route 
+              path="/admin/posts" 
+              element={user ? <PostsManager user={user} /> : <Navigate to="/login" replace />} 
+            />
+
+            {/* Auth Routes */}
             <Route 
               path="/login" 
-              element={!user ? <LoginPage /> : <Navigate to="/" replace />} 
+              element={!user ? <LoginPage /> : <Navigate to="/admin" replace />} 
             />
             <Route 
               path="/register" 
-              element={!user ? <RegisterPage /> : <Navigate to="/" replace />} 
+              element={!user ? <RegisterPage /> : <Navigate to="/admin" replace />} 
             />
           </Routes>
         </main>
       </div>
 
-      {/* Footer adjustments to match current layout space */}
       <div className={`transition-all duration-300 ${user && isSidebarOpen ? 'md:pl-64' : 'md:pl-0'}`}>
         <Footer />
       </div>

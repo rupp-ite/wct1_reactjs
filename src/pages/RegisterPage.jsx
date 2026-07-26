@@ -1,4 +1,3 @@
-// src/pages/RegisterPage.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../lib/firebaseClient";
@@ -31,7 +30,7 @@ export default function RegisterPage() {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/"); // Firebase logs users in directly after signup. Go home!
+      navigate("/admin"); // Directly navigates to Admin Portal!
     } catch (authError) {
       console.error("Firebase registration error:", authError);
       setError(authError.message.replace("Firebase: ", ""));
@@ -44,7 +43,7 @@ export default function RegisterPage() {
     <section className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
         <h1 className="text-3xl font-bold mb-1 text-center text-gray-800">Register</h1>
-        <p className="text-center text-sm text-gray-500 mb-6">Create a new account</p>
+        <p className="text-center text-sm text-gray-500 mb-6">Create a new Admin account</p>
 
         <form onSubmit={handleRegister} className="space-y-5">
           <div>

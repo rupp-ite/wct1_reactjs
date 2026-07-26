@@ -1,94 +1,107 @@
-import profilePic from "../assets/profile.jpg";
-import StemBuilding from "../assets/stem.jpeg";
-import { StatCard, TableRow } from "../components/Dashboard";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { db } from "../lib/firebaseClient";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
-export default function HomePage({ user }) {
-  // ================= DASHBOARD =================
-  if (user) {
-    return (
-      <main className="bg-gray-50">
-        <div className="max-w-6xl mx-auto space-y-8">
+export default function HomePage() {
+  const [posts, setPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
-          {/* Header */}
-          <div className="flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                Dashboard
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Welcome back,{" "}
-                <span className="font-medium">{user.email}</span>
-              </p>
-            </div>
+  useEffect(() => {
+    async function fetchPublicPosts() {
+      try {
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const fetchedPosts = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error("Error fetching public posts:", error);
+      } finally {
+        setLoadingPosts(false);
+      }
+    }
 
-            <div className="w-12 h-12 rounded-full bg-gray-600 text-white flex items-center justify-center font-semibold text-lg shadow-sm">
-              {user.email.charAt(0).toUpperCase()}
-            </div>
-          </div>
+    fetchPublicPosts();
+  }, []);
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard title="Total Projects" value="12" />
-            <StatCard title="Active" value="8" color="text-green-600" />
-            <StatCard title="Pending" value="3" color="text-yellow-600" />
-            <StatCard title="Inactive" value="1" color="text-red-600" />
-          </div>
+  // Helper to extract first image URL or plain text snippet from raw HTML
+  const extractThumbnail = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const img = doc.querySelector("img");
+    return img ? img.src : null;
+  };
 
-          {/* Table */}
-          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-            <div className="px-6 py-4 border-b flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Project Overview
-              </h2>
-              <span className="text-xs text-gray-500 uppercase">
-                Sample Data
-              </span>
-            </div>
+  const extractSnippet = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const text = doc.body.textContent || "";
+    return text.length > 120 ? text.substring(0, 120) + "..." : text;
+  };
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr>
-                    <th className="px-6 py-3 text-left font-medium">ID</th>
-                    <th className="px-6 py-3 text-left font-medium">Name</th>
-                    <th className="px-6 py-3 text-left font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  <TableRow id="1" name="Sample Item A" status="Active" />
-                  <TableRow id="2" name="Sample Item B" status="Pending" />
-                  <TableRow id="3" name="Sample Item C" status="Inactive" />
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-      </main>
-    );
-  }
-
-  // ================= PUBLIC PAGE =================
   return (
-    <main className="flex-1 flex flex-col items-center justify-center space-y-6">
-      <section className="flex text-start px-4 space-x-4">
-        <img
-          src={profilePic}
-          alt="Profile"
-          className="w-40 h-40 rounded-full shadow-lg border-4 border-white"
-        />
-        <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">
-            Welcome to My React Site
-          </h1>
-          <p className="text-lg md:text-xl">
-            Hello! I'm learning{" "}
-            <span className="font-semibold text-blue-600">React</span>.
-          </p>
-        </div>
+    <div className="space-y-8 py-6 max-w-6xl mx-auto">
+      <section className="text-center space-y-3">
+        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          Welcome to Our Blog
+        </h1>
+        <p className="text-lg text-gray-600">
+          Discover latest updates, news, and insights.
+        </p>
       </section>
 
-      <img src={StemBuilding} alt="StemBuilding" className="max-w-3xl" />
-    </main>
+      {/* Post Grid View */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">Latest Posts</h2>
+
+        {loadingPosts ? (
+          <p className="text-gray-500 animate-pulse">Loading blog posts...</p>
+        ) : posts.length === 0 ? (
+          <p className="text-gray-500">No blog posts published yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => {
+              const thumbnail = extractThumbnail(post.content);
+              const snippet = extractSnippet(post.content);
+
+              return (
+                <div key={post.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                  {/* Thumbnail Image */}
+                  <div className="h-48 bg-gray-100 w-full overflow-hidden flex items-center justify-center">
+                    {thumbnail ? (
+                      <img src={thumbnail} alt={post.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-gray-400 font-semibold text-sm">No Image Preview</div>
+                    )}
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-gray-900 line-clamp-2">{post.title}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-3">{snippet}</p>
+                    </div>
+
+                    <div className="pt-2 border-t flex items-center justify-between">
+                      <span className="text-xs text-gray-400">
+                        {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString() : ""}
+                      </span>
+
+                      <Link 
+                        to={`/post/${post.id}`} 
+                        className="text-xs font-semibold text-blue-600 hover:text-blue-800"
+                      >
+                        Read More →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

@@ -4,10 +4,10 @@ import { auth } from "../lib/firebaseClient";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");        // form state
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // loading state
-  const [error, setError] = useState(null);      // error message state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/"); // The App.jsx global listener automatically handles state update!
+      navigate("/admin"); // Directly navigates to Admin Portal!
     } catch (authError) {
       console.error("Firebase login error:", authError);
       setError(authError.message.replace("Firebase: ", ""));
@@ -31,7 +31,7 @@ export default function LoginPage() {
     <section className="flex-1 flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-1">Welcome Back</h2>
-        <p className="text-center text-sm text-gray-500 mb-6">Login to your account</p>
+        <p className="text-center text-sm text-gray-500 mb-6">Login to access AdminPortal</p>
 
         <form className="space-y-5" onSubmit={handleLogin}>
           <div>
