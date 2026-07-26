@@ -1236,4 +1236,4 @@ In your **Firebase Console** $\rightarrow$ **Firestore Database** $\rightarrow$ 
     }
 **Note: please follow previous lab to install tailwindcss and react-router** 
 - Install Tailwind CSS `npm install tailwindcss @tailwindcss/vite`
-- Git repository: ` https://github.com/rupp-ite/wct1_reactjs/tree/part2 `
+- Git repository: ` https://github.com/rupp-ite/wct1_reactjs/tree/part3 `
